@@ -1,0 +1,161 @@
+<!-- 
+    This page is the lecturer home page, where staff with the role of lecturer
+    will be taken after logging in to the application. From here they can navigate to where
+    they want or log out.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lecturer Home Page</title>
+</head>
+<style>
+    /* body sets the font of the text in the body.*/
+    body {
+      margin: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    /* title sets the pages banner to the top of the screen and sizes and colours it.
+    This banner is what houses the title of the page.*/
+    .title{
+        background-color: #035098;
+        padding: 20px;
+        color: white;
+        margin: 0;
+        border-radius: 0px 0px 30px 30px;
+    }
+
+    /* main is used to hold and position the main part of the pages contents.*/
+    .main{
+        display: flex;
+        position: relative;
+        top: 25%;
+        left: 20%;
+        z-index: 1;
+        padding-top: 100px;
+    }
+
+    /* secondary works the same as main but instead positions itself lower.*/
+    .secondary{
+        display: flex;
+        position: relative;
+        top: 40%;
+        left: 20%;
+        z-index: 1;
+        padding-bottom: 100px;
+    }
+
+    /*button is used to implement a unifrom button design.*/
+    .button{
+        padding: 20px 40px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+
+    /* makes the buttons hovered by the cursor change background colour to show user selection.*/
+    .button:hover{
+        background-color: #ccc;
+    }
+
+    /* a is used to position and display the (new or used) links in theme with the page.*/
+    a:link, a:visited{
+        width: 200px;
+        height: 60px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        padding: 30px;
+        margin: 20px 30px;
+        border-radius: 20px;
+        font-size: 28px;
+        background-color: #013a74;
+        color: white;
+    }
+
+    /* This makes the a links change backgorund colour when the cursor hovers, to highlight
+    when a user's selection.*/
+    a:hover, a:active {
+        background-color: #001e3b;
+    }
+
+    /* logout formats the logout button placing it on the top right of the page within the
+    title banner.*/
+    .logout{
+        position: absolute;
+        top: 4%;
+        right: 3%;
+        padding: 15px 30px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+
+    /* Used to produce the hover effect for the logout button. */
+    .logout:hover{
+        background-color: #ccc;
+    }
+
+    /* check style is used to place the 'Are you sure?' message when a user is
+    logging out or making a change to database info. It places the popup question
+    front and center of the screen.*/
+    .check{
+        position:fixed;
+        display: none;
+        margin: auto;
+        width: 50%;
+        left: 20%;
+        top: 20%;
+        padding: 30px 10px;
+        background-color: #ccc;
+        border-color: black;
+        border-radius: 5px;
+        z-index: 2;
+        font-size: 25px;
+    }
+</style>
+<body>
+    <!-- Creates the header banner displaying the page title and the logout button. -->
+    <div class="title">
+        <h1 style="display: flex; align-items: center; height: 20px; font-size:50px;">Welcome Lecturer</h1>
+        <button type="button" class="logout" onclick="checker();">Logout</button>
+    </div>
+
+    <!-- Holds the top row of navigation buttons. -->
+    <div class="main">
+    <a href="/go_to_create_timetable">Create Timetable</a>
+    <a href="/go_to_add_class">Add Class</a>
+    <a href="/manage_class">Manage Classes</a>
+    
+    </div>
+
+    <!-- Holds the 2nd row of navigation buttons. -->
+    <div class="secondary">
+        <a href="/view_dep">View Departments</a>
+        <a href="/view_class">View Classes</a>
+        <a href="/view_dem">View Demonstrators</a>
+    </div>
+
+    <!-- Used to confirm if a user wants to logout before doing so, only appears when logout is clicked. -->
+    <div class="check" id="checkbox">
+        <p style="font-size:30px;">Are you sure you would like to logout?</p>
+        <button type="button" class="button" onclick="logout();">Confirm logout</button>   <button type="button" class="button" onclick="cancel();">Cancel</button>
+    </div>
+
+    <!-- The functions in this script make the checkbox appear when a user clicks logout then
+    will make it disapear if cancel is selected and logout if logout is selected. -->
+    <script>
+        function checker(){
+            document.getElementById("checkbox").style.display = 'block';
+        }
+        function cancel(){
+            document.getElementById("checkbox").style.display = 'none';
+        }
+        function logout(){
+            window.location.href = "/logout";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!--
+    This template is used to display and manage the stored departments. It allows users
+    to delete a department or edit a departments detials.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Departments</title>   
+</head>
+<style>
+    /* Formats the tables displayed in the page.*/
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 5px;
+    }
+    /* Formats the table headings displayed in the page.*/
+    th {
+        background-color: #ccc;
+        color: black
+    }
+
+    /* input is used to design the input of type text.*/
+    input[type="text"] {
+      width: 300px;
+      height: 30px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 20px;
+      color: #333;
+      background-color: #f1f1f1;
+      z-index: 1;
+    }
+
+    /* body sets the font of the text in the body.*/
+    body {
+      margin: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    /* title sets the pages banner to the top of the screen and sizes and colours it.
+    This banner is what houses the title of the page.*/
+    .title{
+        background-color: #035098;
+        padding: 20px;
+        color: white;
+        margin: 0;
+        border-radius: 0px 0px 30px 30px;
+    }
+
+    /* container  is used to position the add and bback buttons at the bottom
+    of the screen.*/
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10vh;
+    }
+
+    /* button is used to implement a unifrom button design.*/
+    .button{
+        padding: 20px 40px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* makes the buttons hovered by the cursor change background colour to show user selection.*/
+    .button:hover{
+        background-color: #ccc;
+    }
+    /* Removes bullet points from lists. */
+    ul.no-bullets {
+        list-style-type: none;
+    }
+
+    /* check style is used to place the 'Are you sure?' message when a user is
+    logging out or making a change to database info. It places the popup question
+    front and center of the screen.*/
+    .check{
+        position:fixed;
+        display: none;
+        margin: auto;
+        width: 50%;
+        left: 20%;
+        top: 20%;
+        padding: 30px 10px;
+        background-color: #ccc;
+        border-color: black;
+        border-radius: 5px;
+        z-index: 2;
+        font-size: 25px;
+    }
+
+    /* logout formats the logout button placing it on the top right of the page within the
+    title banner.*/
+    .logout{
+        position: absolute;
+        top: 4%;
+        right: 3%;
+        padding: 15px 30px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* Used to produce the hover effect for the logout button. */
+    .logout:hover{
+        background-color: #ccc;
+    }
+</style>
+<body>
+    <!-- Creates the header banner displaying the page title and the logout button. -->
+    <div class="title">
+        <h1 style="display: flex; align-items: center; height: 20px; font-size:50px;">Manage Departments</h1>
+        <button type="button" class="logout" onclick="logoutChecker();">Logout</button>
+    </div>
+
+    <!-- Displays the table of departments, including the buttons for edit and delete. -->
+    <p style="font-size:20px;">Manage departments here:</p>
+    <div style="position: relative; left:20%; margin: 20px;" id="display"></div>
+
+    <!-- checkbox is used to see if a user is happy with their deletion and gives a chance to cancel before
+    commiting the removal. -->
+    <div id="checkbox" class="check">
+        <p style="font-size:30px;">Are you sure you want to delete the following  department? Deleting a department also deletes all linked classes:</p>
+        <p id="checkName"></p>
+        <button type="button" class="button" onclick="deleteDep();">Confirm</button>   <button type="button" class="button" onclick="cancel();">Cancel</button>
+    </div>
+
+    <p id="message"></p>
+
+    <!-- Used to hold the back button centered at the bottom of the page. -->
+    <div class="container">
+        <button class="button" onclick="history.back()">Go Back</button>
+    </div>
+
+    <!-- Establishes the ajax framework used to communicate with app.py. -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+    <script>
+        /* Recieves an array and puts the values into a table, returning the table.
+        Table includes the edit and delete buttons for each department. */
+        function tablifyArray(arrayOfDeps){
+            var table = "<table>";
+            table += "<tr><th>Department</th><th></th></tr>";
+            for(var i=0; i<arrayOfDeps.length; i++){
+                table += "<tr><td>" + arrayOfDeps[i] + "</td><td><button onclick='checker("+i+")'>Delete</button><button onclick='editor("+i+")'>Edit</button></td></tr>";
+            }
+            table += "</table>";
+            return table;
+        }
+
+        /* This code runs when the page is loaded, it accepts values of departments so
+        these values can be presented in the table. It also creates variables that are used to
+        store the index of which department is being editted or deleted and the original name. */
+        depToDelete = 0;
+        depToEdit = 0;
+        oldName = '';
+        let departments = JSON.parse('{{deps|tojson}}');
+        var display = document.getElementById('display');
+        
+        display.innerHTML = tablifyArray(departments);
+
+        /* deletDep makes a post ajax request that contains the details of the department being deleted
+        to app.py, which in turn removes the department and associated classes from the database, returning
+        a response message. */
+        function deleteDep(){
+            const department = departments[depToDelete];
+            const output = JSON.stringify({name: department});
+            document.getElementById("checkbox").style.display = 'none';
+            refresh(depToDelete);
+            $.ajax({
+                url:"/delete_dep",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(output),
+                success: function(response){
+                    document.getElementById("message").style.display = 'block';
+                    document.getElementById("message").innerHTML = response;
+                }
+            });
+        }
+
+        /* refresh is used to remove the index i, from departments array and remake the
+        table displaying the updated departments.*/
+        function refresh(i){
+            departments.splice(i, 1);
+            document.getElementById("display").innerHTML = tablifyArray(departments);
+        }
+
+        /* checker prompts the user with a pop up asking if they are sure they want to delete
+        the department.*/
+        function checker(i){
+            depToDelete = i;
+            document.getElementById("message").style.display = 'none';
+            name = departments[i];
+            
+            document.getElementById("checkbox").style.display = 'block';
+            document.getElementById("checkName").innerHTML = 'Name: ' + name;
+        }
+        /* When called cancel prevents the deletion. */
+        function cancel(){
+            document.getElementById("checkbox").style.display = 'none';
+        }
+    </script>
+
+    <!-- Used to confirm if a user wants to logout before doing so, only appears when logout is clicked. -->
+    <div class="check" id="logoutCheckbox">
+        <p style="font-size:30px;">Are you sure you would like to logout?</p>
+        <button type="button" class="button" onclick="logout();">Confirm logout</button>   <button type="button" class="button" onclick="logoutCancel();">Cancel</button>
+    </div>
+
+    <!-- Used to house the editor that allows users to make changes to the department. -->
+    <div id="editor" class="check">
+        <p>Make changes to the department's details here: </p>
+        <form id="editDepForm">
+            <p id="editOldName"></p>
+            <input type="text" id="newDepName" value='' placeholder="New department name">
+            <br>
+            <br><br>
+            <p id="i" style="font-size: 20px;"></p>
+            <button type="button" class="button" onclick="edit();">Edit</button>   <button type="button" class="button" onclick="editorCancel();">Cancel</button>
+        </form>
+    </div>
+
+    <!-- The functions in this script make the checkbox appear when a user clicks logout then
+    will make it disapear if cancel is selected and logout if logout is selected. -->
+    <script>
+        function logoutChecker(){
+            document.getElementById("logoutCheckbox").style.display = 'block';
+        }
+        function logoutCancel(){
+            document.getElementById("logoutCheckbox").style.display = 'none';
+        }
+        function logout(){
+            window.location.href = "/logout";
+        }
+    </script>
+
+    <script>
+        /* When called editor displays a popup message asking the user if they are sure they want
+        to make the edit to the department. */
+        function editor(index){
+            depToEdit = index;
+            oldName = departments[depToEdit];
+            document.getElementById('editOldName').innerHTML = 'Old department name: ' + oldName;
+            document.getElementById('editor').style.display = 'block';
+        }
+
+        /* Cancels the edit before it can be completed.*/
+        function editorCancel(){
+            document.getElementById('editor').style.display = 'none';
+        }
+
+        /* edit makes a post ajax request that contains the details of the department being edited,
+        old and new name, to app.py, which in turn edits the departments name in the department,
+        class, and demonstrator tables in the database, returning a response message. Also updating
+        the table displayed to reflect the change made. */
+        function edit(){
+            newName = document.getElementById('newDepName').value;
+            const output = JSON.stringify({old_name: oldName, new_name: newName});
+            document.getElementById("editor").style.display = 'none';
+            departments[depToEdit] = newName;
+            display.innerHTML = tablifyArray(departments);
+            $.ajax({
+                url:"/edit_dep",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(output),
+                success: function(response){
+                    document.getElementById("message").style.display = 'block';
+                    document.getElementById("message").innerHTML = response;
+                }
+            });
+        }
+    </script>
+</body> 
+</html>

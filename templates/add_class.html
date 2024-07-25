@@ -1,0 +1,373 @@
+<!--
+    This page is where a user adds a class into the system.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Class</title> 
+</head>
+<style>
+    /* body sets the font of the text in the body.*/
+    body {
+      margin: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    /* title sets the pages banner to the top of the screen and sizes and colours it.
+    This banner is what houses the title of the page.*/
+    .title{
+        background-color: #035098;
+        padding: 20px;
+        color: white;
+        margin: 0;
+        border-radius: 0px 0px 30px 30px;
+    }
+
+    /* input is used to design the input of type text.*/
+    input[type="text"] {
+      width: 300px;
+      height: 30px;
+      padding: 10px;
+      margin: 0 30px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 20px;
+      color: #333;
+      background-color: #f1f1f1;
+      z-index: 1;
+    }
+
+    /* main is used to hold and position the main part of the pages contents.*/
+    .main{
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        top: 20%;
+        left: 5%;
+        z-index: 1;
+        flex-wrap: wrap;
+        padding-bottom: 100px;
+    }
+
+    /* container  is used to position the add and bback buttons at the bottom
+    of the screen.*/
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10vh;
+    }
+
+    /* button is used to implement a unifrom button design.*/
+    .button{
+        padding: 20px 40px;
+        margin: 0 70px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+
+    /* button.skill is used to implement a specific button design for the skill buttons.*/
+    .button.skill{
+        padding: 10px 20px;
+        margin: 0 10px;
+        font-size: 18px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+
+    /* button.add is used to implement a specific button design for the add button.*/
+    .button.add{
+        background-color: #035098;
+        color: white;
+    }
+
+    /* makes the buttons hovered by the cursor change background colour to show user selection.*/
+    .button.add:hover{
+        background-color: #023c72;
+    }
+    .button:hover{
+        background-color: #ccc;
+    }
+
+    /* drop implements a design style for the drop down selections.*/
+    .drop {
+        padding: 10px;
+        margin: 0 30px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 20px;
+        color: #333;
+        background-color: #f1f1f1;
+      }
+
+    /* check style is used to place the 'Are you sure?' message when a user is
+    logging out or making a change to database info. It places the popup question
+    front and center of the screen.*/
+      .check{
+        position:fixed;
+        display: none;
+        margin: auto;
+        width: 50%;
+        left: 20%;
+        top: 20%;
+        padding: 30px 10px;
+        background-color: #ccc;
+        border-color: black;
+        border-radius: 5px;
+        z-index: 2;
+        font-size: 25px;
+    }
+    /* logout formats the logout button placing it on the top right of the page within the
+    title banner.*/
+    .logout{
+        position: absolute;
+        top: 4%;
+        right: 3%;
+        padding: 15px 30px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* Used to produce the hover effect for the logout button. */
+    .logout:hover{
+        background-color: #ccc;
+    }
+</style>
+<body>
+    <!-- Creates the header banner displaying the page title and the logout button. -->
+    <div class="title">
+        <h1 style="display: flex; align-items: center; height: 20px; font-size:50px;">Add Class</h1>
+        <button type="button" class="logout" onclick="logoutChecker();">Logout</button>
+    </div>
+
+    <!-- Holds the main functionality of the page, where a user can enter details of class. -->
+    <div class="main">
+        <p style="font-size:24px;">Enter the details of the class you would like to add:</p>
+
+        <form id="addClassForm">
+            <input type="text" placeholder="Class Code" id="classCode" name="classCode"><input type="text" placeholder="Class name"id="className" name="className">
+            <br>
+            <br>
+
+            <select id="department" class="drop" name="department"></select><select id="pref_dem" class="drop"></select>
+            <br>
+
+            <p>When will the class take place: </p>
+            <select id="day" name="day" class="drop">
+                <option value="" disabled selected>Day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+            </select><select id="time" name="time" class="drop">
+                <option value="" disabled selected>Time</option>
+                <option value="9">9am-10am</option>
+                <option value="10">10am-11am</option>
+                <option value="11">11am-12am</option>
+                <option value="12">12am-1pm</option>
+                <option value="13">1pm-2pm</option>
+                <option value="14">2pm-3pm</option>
+                <option value="15">3pm-4pm</option>
+                <option value="16">4pm-5pm</option>
+            </select>
+            <br><br>
+
+            <label for="NOD">Number of demonstrators required (min 0 and max 8):</label><br>
+            <input type="range" id="NOD" name="NOD" value ="0" min="0" max="8" oninput="liveChange(this.value)">
+            <p id="showNOD"></p>
+            <input type="text" placeholder="Skills required"id="skills" name="skills"><button type="button" class="button skill" onclick="addSkill(skills.value)">Add skill</button><button type="button" class="button skill" onclick="clearSkills();">Clear skills</button>
+            <p id="showSkills"></p>
+            <br><br>
+            
+        </form>
+        <p style="font-size:20px;" id="responseMessage"></p>
+    </div>
+
+    <!-- checkbox is used to see if a user is happy with their input and gives a chance to cancel before
+    implementing the addition. -->
+    <div class="check" id="checkbox">
+        <p style="font-size:30px;">Are you sure you would like to add the class:</p>
+        <p id="checkCode"></p>
+        <p id="checkName"></p>
+        <p id="checkDep"></p>
+        <p id="checkpref_dem"></p>
+        <p id="checkDayTime"></p>
+        <p id="checkNOD"></p>
+        <p id="checkSkills"></p>
+        <button type="button" class="button" onclick="addClass();">Confirm</button>   <button type="button" class="button" onclick="cancel();">Cancel</button>
+    </div>
+
+    <!-- Used to hold the add class and back buttons centered at the bottom of the page. -->
+    <div class="container">
+        <button type="button" class="button add" onclick="checker();">Add Class</button>   <button class="button" onclick="history.back()">Go Back</button>
+    </div>
+
+    <!-- Establishes the ajax framework used to communicate with app.py. -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+    <!-- This script runs when the page is loaded, it accepts values of demonstrators and departments so
+    these values can be presented as options in the add class form. -->
+    <script>
+        const deps_and_dems = JSON.parse('{{deps_and_dems|tojson}}');
+        var department = document.getElementById("department");
+
+        var options = "<option value='' disabled selected>Department</option>";
+        for(var i=0;i<deps_and_dems['deps'].length;i++){
+            options += "<option>" + deps_and_dems['deps'][i] + "</option>";
+        }
+        department.innerHTML = options;
+
+        options = "<option value='' disabled selected>Preferred demonstrator</option>";
+        for(dem in deps_and_dems['dems']){
+            options += "<option value='"+dem+"'>" + dem + " : " + deps_and_dems['dems'][dem] + "</option>";
+        }
+        document.getElementById("pref_dem").innerHTML = options;
+    </script>
+
+    <script>
+        /* displaySkills is the list of skills a user has added, addSkill function adds a skill to
+        displaySkills and then displays the showSkills list.*/
+        var displaySkills = [];
+        function addSkill(add){
+            var showSkills = document.getElementById('showSkills');
+            var show = "<ul>";
+            for(var i = 0; i < displaySkills.length; i++){
+                show += "<li>" + displaySkills[i] + "</li>";
+            }
+            show += "<li>"+ add + "</li></ul>";
+            displaySkills.push(add);
+            showSkills.innerHTML = show;
+        }
+
+        /* Clears the list of skills.*/
+        function clearSkills(){
+            var showSkills = document.getElementById('showSkills');
+            showSkills.innerHTML = "";
+            for(var i = 0; i < displaySkills.length; i++){
+                displaySkills.pop();
+                displaySkills.pop();
+                displaySkills.pop();
+            }
+        }
+
+        /* addClass function takes all of the user inputted values and sends a
+        post ajax request to app.py, containing a dictionary of the values. And displays
+        the resulting response. */
+        function addClass(){
+            document.getElementById("checkbox").style.display = 'none';
+            document.getElementById("responseMessage").style.display = 'block';
+
+            const code = document.getElementById('classCode').value;
+            const name = document.getElementById('className').value;
+            const dep = document.getElementById('department').value;
+            const pref_dem = document.getElementById('pref_dem').value;
+            const day = document.getElementById('day').value;
+            const time = document.getElementById('time').value;
+            const nod = document.getElementById('NOD').value;
+            const skills = displaySkills;
+            const dict = {code:code, name:name, dep:dep, pref_dem:pref_dem, day:day, time:time, nod:nod, skills:skills};
+            const output = JSON.stringify(dict);
+            $.ajax({
+                url:"/add_class",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(output),
+                success: function(response){
+                    document.getElementById("responseMessage").innerHTML = response;
+                }
+            });
+        }
+    </script>
+
+    <script>
+    /* liveChange keeps the nod value accurate with what the slider is set to.*/
+    function liveChange(value){
+        document.getElementById("showNOD").innerHTML = value +=" demonstrators currently selected.";
+    }
+
+    /* checker function is used to make sure the values are filled out appropriately. Then it pulls
+    up the checkbox that asks a user if they are happy to add the class displaying the details to
+    the user with confirm and cancel options. */
+    function checker(){
+        document.getElementById("responseMessage").style.display = 'none';
+        code = document.getElementById("classCode").value;
+        name = document.getElementById('className').value;
+        dep = document.getElementById('department').value;
+        pref_dem = document.getElementById('pref_dem').value
+        day = document.getElementById('day').value;
+        time = document.getElementById('time').value;
+        nod = document.getElementById('NOD').value;
+        skills = displaySkills;
+
+        if(code == ''){
+            document.getElementById("responseMessage").innerHTML = 'Cannot add class, class code needed.'
+            document.getElementById("responseMessage").style.display = 'block';
+            return;
+        }
+        if(name == ''){
+            document.getElementById("responseMessage").innerHTML = 'Cannot add class, class name needed.'
+            document.getElementById("responseMessage").style.display = 'block';
+            return;
+        }
+        if(dep == ''){
+            document.getElementById("responseMessage").innerHTML = 'Cannot add class, department needed.'
+            document.getElementById("responseMessage").style.display = 'block';
+            return;
+        }
+        if(pref_dem == ''){
+            document.getElementById("responseMessage").innerHTML = 'Cannot add class, preferred demonstrator needed.'
+            document.getElementById("responseMessage").style.display = 'block';
+            return;
+        }
+        if(day == ''){
+            document.getElementById("responseMessage").innerHTML = 'Cannot add class, day needed.'
+            document.getElementById("responseMessage").style.display = 'block';
+            return;
+        }
+        if(time == ''){
+            document.getElementById("responseMessage").innerHTML = 'Cannot add class, time needed.'
+            document.getElementById("responseMessage").style.display = 'block';
+            return;
+        }
+        document.getElementById("checkbox").style.display = 'block';
+        document.getElementById("checkName").innerHTML = 'Name: ' + name;
+        document.getElementById("checkCode").innerHTML = 'Class code: ' + code;
+        document.getElementById("checkDep").innerHTML = 'Department: ' + dep;
+        document.getElementById("checkpref_dem").innerHTML = 'Preferred demonstrator: ' + pref_dem
+        document.getElementById("checkDayTime").innerHTML = 'Day and time: ' + day+', at '+time;
+        document.getElementById("checkNOD").innerHTML = 'Number of demontrators: ' + nod;
+        document.getElementById("checkSkills").innerHTML = 'Skills: ' + skills;
+    }
+
+    /* cancels the add and hides the checkbox.*/
+    function cancel(){
+        document.getElementById("checkbox").style.display = 'none';
+    }
+    </script>
+
+    <!-- Used to confirm if a user wants to logout before doing so, only appears when logout is clicked. -->
+    <div class="check" id="logoutCheckbox">
+        <p style="font-size:30px;">Are you sure you would like to logout?</p>
+        <button type="button" class="button" onclick="logout();">Confirm logout</button>   <button type="button" class="button" onclick="logoutCancel();">Cancel</button>
+    </div>
+
+    <!-- The functions in this script make the checkbox appear when a user clicks logout then
+    will make it disapear if cancel is selected and logout if logout is selected. -->
+    <script>
+        function logoutChecker(){
+            document.getElementById("logoutCheckbox").style.display = 'block';
+        }
+        function logoutCancel(){
+            document.getElementById("logoutCheckbox").style.display = 'none';
+        }
+        function logout(){
+            window.location.href = "/logout";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!--
+    This template functions as the landing page of the application, users are greeted with
+    it and can move on to the login page. It also triggers the setup of the database structure.
+-->
+<!DOCTYPE html>
+<head>
+    <title>Landing Page</title>
+</head>
+<style>
+    /* body sets the font of the text in the body.*/
+    body {
+      margin: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    /* title sets the pages banner to the top of the screen and sizes and colours it.
+    This banner is what houses the title of the page.*/
+    .title{
+        background-color: #035098;
+        padding: 20px;
+        color: white;
+        margin: 0;
+        border-radius: 0px 0px 30px 30px;
+    }
+
+    /* main is used to hold and position the main part of the pages contents.*/
+    .main{
+        display: flex;
+        position: relative;
+        top: 25%;
+        left: 20%;
+        z-index: 1;
+        padding-top: 100px;
+    }
+
+    /* a is used to position and display the (new or used) links in theme with the page.*/
+    a:link, a:visited{
+        width: 200px;
+        height: 60px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        padding: 30px;
+        margin: 20px 30px;
+        border-radius: 20px;
+        font-size: 28px;
+        background-color: #013a74;
+        color: white;
+    }
+    /* This makes the a links change backgorund colour when the cursor hovers, to highlight
+    when a user's selection.*/
+    a:hover, a:active {
+        background-color: #001e3b;
+    }
+</style>
+
+<body>
+    <!-- Creates the header banner displaying the pages title. -->
+    <div class="title">
+        <h1 style="display: flex; align-items: center; height: 20px; font-size:50px;">Demonstrator Timetabling Tool</h1>
+    </div>
+
+    <!-- Creates the links for navigation to other pages. -->
+    <div class="main">
+        <a href="/go_to_login_page">Login</a>
+        <!-- commented out as they are only used as test values. 
+            <a href="/purge">PURGE</a>
+            <a href="/fill_database">Insert test values</a>
+       -->
+    </div>
+
+    <!-- Establishes the ajax framework used to communicate with app.py. -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+    <!-- Triggers the function which then makes the ajax request to app.py to run function that sets up database. -->
+    <element onload="setup_onload">
+    <script>
+        function setup_onload(){
+            $.ajax({
+                url:"app.py"
+            })
+        }
+    </script>
+</body>

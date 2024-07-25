@@ -1,0 +1,336 @@
+<!--
+    This page is where the timetables are created and analysed.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Timetable</title>
+</head>
+<style>
+    /* Formats the tables displayed in the page.*/
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 10px;
+    }
+    /* Formats the table headings displayed in the page.*/
+    th {
+        background-color: #035098;
+        color: white
+    }
+
+    /* body sets the font of the text in the body.*/
+    body {
+      margin: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    /* title sets the pages banner to the top of the screen and sizes and colours it.
+    This banner is what houses the title of the page.*/
+    .title{
+        background-color: #035098;
+        padding: 20px;
+        color: white;
+        margin: 0;
+        border-radius: 0px 0px 30px 30px;
+    }
+
+    /* response is used to hide the functionality that appears once a user selects single or multi
+    department timetable. */
+    .response{
+        display: none;
+    }
+
+    /* main is used to hold and position the main part of the pages contents.*/
+    .main{
+        position: relative;
+        top: 20%;
+        left: 5%;
+        padding-bottom: 20px;
+    }
+
+    /* drop implements a design style for the drop down selections.*/
+    .drop {
+        padding: 10px;
+        margin: 0 30px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 20px;
+        color: #333;
+        background-color: #f1f1f1;
+    }
+
+    /* container  is used to position the add and bback buttons at the bottom
+    of the screen.*/
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10vh;
+    }
+
+    /* button is used to implement a unifrom button design.*/
+    .button{
+        padding: 20px 40px;
+        font-size: 28px;
+        margin: 20px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* makes the buttons hovered by the cursor change background colour to show user selection.*/
+    .button:hover{
+        background-color: #ccc;
+    }
+
+    /* recalcAnalysis si used to hold the recalculate and analyse buttons below the timetable
+    centered in the page. */
+    .recalcAnalysis{
+        display: none;
+        justify-content: center;
+        align-items: center;
+        height: 10vh;
+    }
+
+    /* check style is used to place the 'Are you sure?' message when a user is
+    logging out or making a change to database info. It places the popup question
+    front and center of the screen.*/
+    .check{
+        position:fixed;
+        display: none;
+        margin: auto;
+        width: 50%;
+        left: 20%;
+        top: 20%;
+        padding: 30px 10px;
+        background-color: #ccc;
+        border-color: black;
+        border-radius: 5px;
+        z-index: 2;
+        font-size: 25px;
+    }
+
+    /* logout formats the logout button placing it on the top right of the page within the
+    title banner.*/
+    .logout{
+        position: absolute;
+        top: 4%;
+        right: 3%;
+        padding: 15px 30px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* Used to produce the hover effect for the logout button. */
+    .logout:hover{
+        background-color: #ccc;
+    }
+</style>
+<body>
+    <!-- Creates the header banner displaying the page title and the logout button. -->
+    <div class="title">
+        <h1 style="display: flex; align-items: center; height: 20px; font-size:50px;">Create timetable</h1>
+        <button type="button" class="logout" onclick="logoutChecker();">Logout</button>
+    </div>
+
+    <!-- Holds the first piece of functionality of the page, where a user can select fi they want to create
+    a timetable for one department or multiple departments. -->
+    <div id="mainBlock" class="main">
+        <p style="font-size:24px;">Create a timetable for one department or multiple?</p>
+        <button class="button" onclick="response('single')">One department</button><button class="button" onclick="response('multi')">Multiple departments</button>
+    </div>
+
+    <!-- Establishes the ajax framework used to communicate with app.py. -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <script>
+        /* The function response displays the choice, single or multi block and hides
+        the mainBlock with the initial question.*/
+        function response(choice){
+            document.getElementById(choice).style.display = 'block';
+            document.getElementById("mainBlock").style.display = 'none';
+        }
+
+        /* This piece of code recieves data from app.oy when it loads the template, the data is a
+        list of departments which are presented as timetable choices to the user.*/
+        const departments = JSON.parse('{{deps|tojson}}');
+        var options = "";
+            for(var i=0;i<departments.length;i++){
+                options += "<option>" + departments[i] + "</option>";
+            }
+    </script>
+
+    <!-- Once a user has chosen single department this block appears and asks them to select
+    which department they want to make the timetable for. Then displaying the timetable below. -->
+    <div id="single" class="response">
+        <p style="font-size:24px;">Create timetable for one department</p>
+        <br>
+        <form id="timetableForm">
+            <label style="font-size:24px;"for="department">Select the department you want to create a timetable for: </label><select class="drop" id="department"></select>
+            <button type="button" class="button" onclick="create();">Create Timetable</button>
+        </form>
+
+        <div id="displayTT"></div>
+        <div class="recalcAnalysis" id="singleButton"><button type="button" class="button" onclick="displayRecalcMsgSingle();" id="recalcSingle">Recalculate</button><button type="button" class="button" onclick="analyseSingle();" id="analyseSingle">Analyse</button></div>
+        <div id="displaySingleAnalysis"></div>
+    </div>
+
+    <script>
+        /* Sets the options for dropdown 'department' to options.*/
+        department.innerHTML = options;
+
+        /* Called when recalculation is requested, message displayed and create() is called.*/
+        function displayRecalcMsgSingle(){
+            document.getElementById("message").innerHTML = 'Recalculated.';
+            create();
+        }
+
+        /* Resets the display to only show the newly created timetable which is created by sending
+        a post request containing the selected department to app.py that creates a timetable for
+        the selected department. Displaying the timetable and recalculate and analyse button
+        below it. The response has been formatted to HTML table before being returned here so the
+        results can be displayed directly.*/
+        function create(){
+            document.getElementById('selectMessage').innerHTML = '';
+            document.getElementById("displaySingleAnalysis").style.display = 'none';
+            document.getElementById("displayMultiAnalysis").style.display = 'none';
+            const dep = document.getElementById("department").value;
+            if(dep == ''){
+                document.getElementById('selectMessage').innerHTML = 'Please select a department.';
+                return
+            }
+            const dict = {name: dep};
+            const output = JSON.stringify(dict);
+            $.ajax({
+                url:"/create_timetable",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(output),
+                success: function(tt){
+                    document.getElementById("displayTT").innerHTML = tt;
+                }
+            });
+            document.getElementById("singleButton").style.display = 'block';
+        }
+    </script>
+
+    <!-- Once a user has chosen multiple departments this block appears and asks them to select
+    which departments they want to use in the timetable. Then displaying the timetable below. -->
+    <div id="multi" class="response">
+        <p style="font-size:24px;">Create timetable for multiple departments</p>
+        <br>
+        <form id="multiTimetableForm">
+            <label style="font-size:24px;" for="multiDepartments">Select the departments you want to create a timetable for: </label><select class="drop" multiple id="multiDepartments"></select>
+            <p>Hold ctrl on windows or command on mac and click to select multiple or deselect and option</p>
+            <button type="button" class="button" onclick="multiCreate();">Create Timetable</button>
+        </form>
+        <div id="displayMultiTT"></div>
+    </div>
+    <p id="message"></p>
+    <p id="selectMessage"></p>
+
+    <script>
+        /* Sets the options for dropdown 'multiDepartments' to options.*/
+        multiDepartments.innerHTML = options;
+
+        /* Displays the recalcultated message and performs the recalculation.*/
+        function displayRecalcMsg(){
+            document.getElementById("message").innerHTML = 'Recalculated.';
+            multiCreate();
+        }
+
+        /* Resets the display to only show the newly created timetable which is created by sending
+        a post request containing a list of the selected departments to app.py that creates a
+        timetable for the selected departments. Displaying the timetable and recalculate and
+        analyse buttons below it. */
+        function multiCreate(){
+            document.getElementById('selectMessage').innerHTML = '';
+            document.getElementById("displaySingleAnalysis").style.display = 'none';
+            document.getElementById("displayMultiAnalysis").style.display = 'none';
+            const selectedDepartments = Array.from(document.getElementById("multiDepartments").selectedOptions).map(option => option.value);
+            if(selectedDepartments==''){
+                document.getElementById('selectMessage').innerHTML = 'Please select a department.';
+                return
+            }
+            const dict = { departments: selectedDepartments };
+            const output = JSON.stringify(dict);
+            $.ajax({
+                url:"/create_multi_timetable",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(output),
+                success: function(tt){
+                    document.getElementById("displayMultiTT").innerHTML = tt;
+
+                }
+            });
+            document.getElementById("multiButton").style.display = 'block';                
+        }
+    </script>
+
+    <!-- recalcAnalysis is used to display the recalculate and analyse buttons for multi departments option. -->
+    <div class="recalcAnalysis" id="multiButton">
+        <button type="button" class="button" onclick="displayRecalcMsg();" id="recalcMulti">Recalculate</button><button type="button" class="button" onclick="analyseMulti();" id="analyseMulti">Analyse</button>
+        <div id="displayMultiAnalysis"></div>
+    </div>
+
+    <script>
+        /* analyseSingle/Multi are both used to send post requests to app.py that contain the department or
+        departments that are to be analysed. The request returns the values in a HTML formatted table so
+        that results can just be displayed directly.*/
+        function analyseSingle(){
+            document.getElementById("message").innerHTML = '';
+            document.getElementById("displaySingleAnalysis").style.display = 'block';
+            const dep = document.getElementById("department").value;
+            const dict = {name: dep};
+            const output = JSON.stringify(dict);
+            $.ajax({
+                url:"/single_analysis",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(output),
+                success: function(sa){
+                    document.getElementById("displaySingleAnalysis").innerHTML = sa;}});
+        }
+        function analyseMulti(){
+            document.getElementById("message").innerHTML = '';
+            document.getElementById("displayMultiAnalysis").style.display = 'block';
+            const selectedDepartments = Array.from(document.getElementById("multiDepartments").selectedOptions).map(option => option.value);
+            const dict = { departments: selectedDepartments };
+            const output = JSON.stringify(dict);
+            $.ajax({
+                url:"/multi_analysis",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(output),
+                success: function(ma){
+                    document.getElementById("displayMultiAnalysis").innerHTML = ma;}});
+        }
+    </script>
+
+    <!-- Used to hold the back button centered at the bottom of the page. -->
+    <div class="container">
+        <button class="button" onclick="history.back()">Go Back</button>
+    </div>
+
+    <!-- Used to confirm if a user wants to logout before doing so, only appears when logout is clicked. -->
+    <div class="check" id="logoutCheckbox">
+        <p style="font-size:30px;">Are you sure you would like to logout?</p>
+        <button type="button" class="button" onclick="logout();">Confirm logout</button>   <button type="button" class="button" onclick="logoutCancel();">Cancel</button>
+    </div>
+
+    <!-- The functions in this script make the checkbox appear when a user clicks logout then
+    will make it disapear if cancel is selected and logout if logout is selected. -->
+    <script>
+        function logoutChecker(){
+            document.getElementById("logoutCheckbox").style.display = 'block';
+        }
+        function logoutCancel(){
+            document.getElementById("logoutCheckbox").style.display = 'none';
+        }
+        function logout(){
+            window.location.href = "/logout";
+        }
+    </script>
+</body>
+</html>

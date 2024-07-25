@@ -1,0 +1,513 @@
+<!--
+    This template is used to display and manage the stored classes. It allows users
+    to delete a class or edit a classes detials.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Classes</title>
+</head>
+<style>
+    /* Formats the tables displayed in the page.*/
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 5px;
+    }
+    /* Formats the table headings displayed in the page.*/
+    th {
+        background-color: #ccc;
+        color: black
+    }
+
+    /* body sets the font of the text in the body.*/
+    body {
+      margin: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    /* title sets the pages banner to the top of the screen and sizes and colours it.
+    This banner is what houses the title of the page.*/
+    .title{
+        background-color: #035098;
+        padding: 20px;
+        color: white;
+        margin: 0;
+        border-radius: 0px 0px 30px 30px;
+    }
+
+    /* container  is used to position the add and bback buttons at the bottom
+    of the screen.*/
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10vh;
+    }
+
+    /* button is used to implement a unifrom button design.*/
+    .button{
+        padding: 20px 40px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* makes the buttons hovered by the cursor change background colour to show user selection.*/
+    .button:hover{
+        background-color: #ccc;
+    }
+    /* Removes bullet points from lists. */
+    ul.no-bullets {
+        list-style-type: none;
+    }
+
+    /* input is used to design the input of type text.*/
+    input[type="text"] {
+      width: 300px;
+      height: 30px;
+      padding: 10px;
+      margin: 0 30px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 20px;
+      color: #333;
+      background-color: #f1f1f1;
+      z-index: 1;
+    }
+
+    /* drop implements a design style for the drop down selections.*/
+    .drop {
+        padding: 10px;
+        margin: 0 30px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 20px;
+        color: #333;
+        background-color: #f1f1f1;
+    }
+
+    /* check style is used to place the 'Are you sure?' message when a user is
+    logging out or making a change to database info. It places the popup question
+    front and center of the screen.*/
+    .check{
+        position:fixed;
+        display: none;
+        margin: auto;
+        width: 50%;
+        left: 20%;
+        top: 20%;
+        padding: 30px 10px;
+        background-color: #ccc;
+        border-color: black;
+        border-radius: 5px;
+        z-index: 2;
+        font-size: 25px;
+    }
+
+    /* logout formats the logout button placing it on the top right of the page within the
+    title banner.*/
+    .logout{
+        position: absolute;
+        top: 4%;
+        right: 3%;
+        padding: 15px 30px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* Used to produce the hover effect for the logout button. */
+    .logout:hover{
+        background-color: #ccc;
+    }
+</style>
+
+<body>
+    <!-- Creates the header banner displaying the page title and the logout button. -->
+    <div class="title">
+        <h1 style="display: flex; align-items: center; height: 20px; font-size:50px;">Manage Classes</h1>
+        <button type="button" class="logout" onclick="logoutChecker();">Logout</button>
+    </div>
+
+    <!-- Displays the table of classes, including the buttons for edit and delete. -->
+    <p style="font-size:20px;">Manage classes here:</p>
+    <div  style="margin: 20px;" id="display"></div>
+
+    <!-- checkbox is used to see if a user is happy with their deletion and gives a chance to cancel before
+    commiting the removal. -->
+    <div id="checkbox" class="check">
+        <p style="font-size:30px;">Are you sure you want to delete the following class?</p>
+        <p id="checkName"></p>
+        <p id="checkCode"></p>
+        <p id="checkDep"></p>
+        <button type="button" class="button" onclick="deleteClass();">Confirm</button>   <button type="button" class="button" onclick="cancel();">Cancel</button>
+    </div>
+
+    <!-- editCheckbox is used to see which attribute of the class they want to alter. -->
+    <div id="editCheckbox" class="check">
+        <p id="editPopUpQ" style="font-size:30px;"></p>
+        <form id="editPopUpForm">
+            <select id="editPopUpValue" class="drop">
+                <option value="name">Name</option>
+                <option value="prefDem">Preferred demonstrator</option>
+                <option value="day">Day</option>
+                <option value="time">Time</option>
+                <option value="nod">Number of demonstrators</option>
+                <option value="skills">Skills</option>
+            </select>
+        </form>
+        <button type="button" class="button" onclick="edit();">Edit</button> <button type="button" class="button" onclick="cancelEdit();">Cancel</button>
+    </div>
+
+    <!-- editName is a popup that prompts a user for the new class name. -->
+    <div id="editName" class="check">
+        <p id="editNameQ"></p>
+        <form>
+            <input type="text" placeholder="New class name" id="newName">
+        </form>
+        <p id="error"></p>
+        <button type="button" class="button" onclick="submitEdit('name');">Confirm edit</button> <button type="button" class="button" onclick="cancelEditName();">Cancel</button>
+    </div>
+
+    <!-- editPrefDem is a popup that prompts a user for the new class preferred demonstrator. -->
+    <div id="editPrefDem" class="check">
+        <p id="editPrefDemQ"></p>
+        <form>
+            <select id="newPrefDem" class="drop"></select>
+        </form>
+        <button type="button" class="button" onclick="submitEdit('pref_dem');">Confirm edit</button> <button type="button" class="button" onclick="cancelEditPrefDem();">Cancel</button>
+    </div>
+
+    <!-- editDay is a popup that prompts a user for the new class day. -->
+    <div id="editDay" class="check">
+        <p id="editDayQ"></p>
+        <form>
+            <select id="newDay" class="drop">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+            </select>
+        </form>
+        <p id="error"></p>
+        <button type="button" class="button" onclick="submitEdit('day');">Confirm edit</button> <button type="button" class="button" onclick="cancelEditDay();">Cancel</button>
+    </div>
+
+    <!-- editTime is a popup that prompts a user for the new class time. -->
+    <div id="editTime" class="check">
+        <p id="editTimeQ"></p>
+        <form>
+            <select id="newTime" class="drop">
+                <option value="9">9am-10am</option>
+                <option value="10">10am-11am</option>
+                <option value="11">11am-12am</option>
+                <option value="12">12am-1pm</option>
+                <option value="13">1pm-2pm</option>
+                <option value="14">2pm-3pm</option>
+                <option value="15">3pm-4pm</option>
+                <option value="16">4pm-5pm</option>
+            </select>
+        </form>
+        <p id="error"></p>
+        <button type="button" class="button" onclick="submitEdit('time');">Confirm edit</button> <button type="button" class="button" onclick="cancelEditTime();">Cancel</button>
+    </div>
+
+    <!-- editNOD is a popup that prompts a user for the new class number of demonstrators. -->
+    <div id="editNOD" class="check">
+        <p id="editNODQ"></p>
+        <form>
+            <select id="newNOD" class="drop">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </select>
+        </form>
+        <p id="error"></p>
+        <button type="button" class="button" onclick="submitEdit('nod');">Confirm edit</button> <button type="button" class="button" onclick="cancelEditNOD();">Cancel</button>
+    </div>
+
+    <!-- editSkills is a popup that prompts a user for the new class skills required. -->
+    <div id="editSkills" class="check">
+        <p id="editSkillsQ"></p>
+        <form>
+            <input type="text" placeholder="New skills required"id="skills"><button type="button" class="button skill" onclick="addSkill(skills.value)">Add skill</button><button type="button" class="button skill" onclick="clearSkills();">Clear skills</button>
+            <p id="showSkills"></p>
+        </form>
+        <p id="error"></p>
+        <button type="button" class="button" onclick="submitEdit('skills');">Confirm edit</button> <button type="button" class="button" onclick="cancelEditSkills();">Cancel</button>
+    </div>
+
+    <p id="message"></p>
+
+    <!-- Used to hold the back button centered at the bottom of the page. -->
+    <div class="container">
+        <button class="button" onclick="history.back()">Go Back</button>
+    </div>
+
+    <!-- Establishes the ajax framework used to communicate with app.py. -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+    <script>
+        /* Recieves an array and puts the values into a table, returning the table.
+        Table includes the edit and delete buttons for each department. */
+        function tablifyArray(arrayOfClasses){
+            var table = "<table>";
+            for(var i=0; i < arrayOfClasses.length; i++){
+                table += "<tr><th>Class Code</th><th>Name</th><th>Department</th><th>Preferred Demonstrator</th><th>Day</th><th>Time</th>";
+                table += "<th>Number of Demonstrators Required</th><th>Demonstrator's Required Skills</th><th></th></tr>";
+
+                table += "<tr><td>" + arrayOfClasses[i]["code"] + "</td><td>" + arrayOfClasses[i]["name"] + "</td><td>" + arrayOfClasses[i]["dep"] + "</td><td>";
+                table += arrayOfClasses[i]["pref_dem"] + "</td><td>" + arrayOfClasses[i]["day"] + "</td><td>" + arrayOfClasses[i]["time"] + "</td><td>" + arrayOfClasses[i]["nod"] + "</td><td>";
+                table += arrayOfClasses[i]["skills"] + "</td><td><button onclick='checker("+i+")'>Delete</button><button onclick='editPopUp("+i+");'>Edit</button></td></tr>";
+            }
+            table += "</table>";
+            return table;
+        }
+
+        /* displaySkills is the list of skills a user has added, addSkill function adds a skill to
+        displaySkills and then displays the showSkills list.*/
+        var displaySkills = [];
+        function addSkill(add){
+            var showSkills = document.getElementById('showSkills');
+            var show = "<ul>";
+            for(var i = 0; i < displaySkills.length; i++){
+                show += "<li>" + displaySkills[i] + "</li>";
+            }
+            show += "<li>"+ add + "</li></ul>";
+            displaySkills.push(add);
+            showSkills.innerHTML = show;
+        }
+
+        /* Clears the list of skills.*/
+        function clearSkills(){
+            var showSkills = document.getElementById('showSkills');
+            showSkills.innerHTML = "";
+            for(var i = 0; i < displaySkills.length; i++){
+                displaySkills.pop();
+                displaySkills.pop();
+                displaySkills.pop();
+            }
+        }
+
+        /* This code runs when the page is loaded, it accepts values of classes and demonstrators so
+        these values can be displayed in a table to users or presented as options. It also creates
+        variables that are used to store the index of which class is being editted or deleted. */
+        classToDelete = 0;
+        classToEdit = 0;
+        const classesAndDems = JSON.parse('{{classes_and_dems|tojson}}');
+        var display = document.getElementById('display');
+
+        classes = classesAndDems['classes'];
+        display.innerHTML = tablifyArray(classes);
+
+        options = "<option value='' disabled selected>Preferred demonstrator</option>";
+        for(dem in classesAndDems['dems']){
+            options += "<option value='"+dem+"'>" + dem + " : " + classesAndDems['dems'][dem] + "</option>";
+        }
+        document.getElementById("newPrefDem").innerHTML = options;
+
+        /* deleteClass makes a post ajax request that contains the details of the class being deleted
+        to app.py, which in turn removes the class from the database, returning a response message.
+        And removing the class from the displayed table. */
+        function deleteClass(){
+            delClass = classes[classToDelete];
+            document.getElementById("checkbox").style.display = 'none';
+            const output = JSON.stringify(delClass);
+            refresh(classToDelete);
+            $.ajax({
+                url:"/delete_class",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(output),
+                success: function(response){
+                    document.getElementById("message").innerHTML = response;
+                    document.getElementById("message").style.display = 'block';
+                }
+            });
+        }
+
+        /* refresh is used to remove the index i, from classes array and remake the
+        table displaying the updated classes.*/
+        function refresh(i){
+            classes.splice(i, 1);
+            document.getElementById("display").innerHTML = tablifyArray(classes);
+        }
+
+        /* checker prompts the user with a pop up asking if they are sure they want to delete
+        the class.*/
+        function checker(i){
+            classToDelete = i;
+            document.getElementById("message").style.display = 'none';
+            name = classes[classToDelete]['name'];
+            code = classes[classToDelete]['code'];
+            dep = classes[classToDelete]['dep'];
+            
+            document.getElementById("checkbox").style.display = 'block';
+            document.getElementById("checkName").innerHTML = 'Name: ' + name;
+            document.getElementById("checkCode").innerHTML = 'Class code: ' + code;
+            document.getElementById("checkDep").innerHTML = 'Department: ' + dep;
+        }
+        /* When called cancel prevents the deletion. */
+        function cancel(){
+            document.getElementById("checkbox").style.display = 'none';
+        }
+        /* Asks the user which class value they would like to change. */
+        function editPopUp(index){
+            classToEdit = index;
+            document.getElementById("editPopUpQ").innerHTML = 'Which value would you like to edit for class: '+ classes[classToEdit]['code'] +'?';
+            document.getElementById("editCheckbox").style.display = 'block';
+        }
+        /* When called cancel stops the edit. */
+        function cancelEdit(){
+            document.getElementById("editCheckbox").style.display = 'none';
+        }
+
+        /* edit function brings up the corresponding attribute editor for the user to input/select
+        a new value for the class. It displays the current value and asks for the replacement. */
+        function edit(){
+            valueToEdit = document.getElementById('editPopUpValue').value;
+            if(valueToEdit == 'name'){
+                document.getElementById("editName").style.display = 'block';
+                document.getElementById("editNameQ").innerHTML = "Current name of "+classes[classToEdit]['code']+": "+classes[classToEdit]['name'];
+                document.getElementById("editCheckbox").style.display = 'none';
+            }
+            if(valueToEdit == 'prefDem'){
+                document.getElementById("editPrefDem").style.display = 'block';
+                document.getElementById("editPrefDemQ").innerHTML = "Current preferred demonstrator for "+classes[classToEdit]['code']+": "+classes[classToEdit]['prefDem'];
+                document.getElementById("editCheckbox").style.display = 'none';
+            }
+            if(valueToEdit == 'day'){
+                document.getElementById("editDay").style.display = 'block';
+                document.getElementById("editDayQ").innerHTML = "Current day "+classes[classToEdit]['code']+" takes place: "+classes[classToEdit]['day'];
+                document.getElementById("editCheckbox").style.display = 'none';
+            }
+            if(valueToEdit == 'time'){
+                document.getElementById("editTime").style.display = 'block';
+                document.getElementById("editTimeQ").innerHTML = "Current time "+classes[classToEdit]['code']+" takes place: "+classes[classToEdit]['time'];
+                document.getElementById("editCheckbox").style.display = 'none';
+            }
+            if(valueToEdit == 'nod'){
+                document.getElementById("editNOD").style.display = 'block';
+                document.getElementById("editNODQ").innerHTML = "Current number of demonstrators requested for "+classes[classToEdit]['code']+": "+classes[classToEdit]['nod'];
+                document.getElementById("editCheckbox").style.display = 'none';
+            }
+            if(valueToEdit == 'skills'){
+                document.getElementById("editSkills").style.display = 'block';
+                document.getElementById("editSkillsQ").innerHTML = "Current skills required for "+classes[classToEdit]['code']+": "+classes[classToEdit]['skills'];
+                document.getElementById("editCheckbox").style.display = 'none';
+            }
+        }
+
+        /* submitEdit recieves a value when called and that tells it which attribute is being
+        editted. Then the original and new values and value are put into a dictionary
+        before being sent in a post ajax request to app.py. Where the edit to the value will be
+        made. Then recieving and displaying the response message. */
+        function submitEdit(value){
+            if(value=='name'){
+                n = document.getElementById("newName").value;
+                if(n==''){
+                    document.getElementById("error").innerHTML = "Enter a valid name";
+                    return
+                }
+                document.getElementById("editName").style.display = 'none';
+                dict = {value:'name', new_value:n, code:classes[classToEdit]['code']};
+            }
+            if(value=='pref_dem'){
+                n = document.getElementById("newPrefDem").value;
+                
+                document.getElementById("editPrefDem").style.display = 'none';
+                dict = {value:'pref_dem', new_value:n, code:classes[classToEdit]['code']};
+            }
+            if(value=='day'){
+                n = document.getElementById("newDay").value;
+                
+                document.getElementById("editDay").style.display = 'none';
+                dict = {value:'day', new_value:n, code:classes[classToEdit]['code']};
+            }
+            if(value=='time'){
+                n = document.getElementById("newTime").value;
+
+                document.getElementById("editName").style.display = 'none';
+                dict = {value:'time', new_value:n, code:classes[classToEdit]['code']};
+            }
+            if(value=='nod'){
+                n = document.getElementById("newNOD").value;
+
+                document.getElementById("editNOD").style.display = 'none';
+                dict = {value:'dems', new_value:n, code:classes[classToEdit]['code']};
+            }
+            if(value=='skills'){
+                n = displaySkills;
+
+                document.getElementById("editSkills").style.display = 'none';
+                dict = {value:'skills', new_value:n, code:classes[classToEdit]['code']};
+            }
+            output = JSON.stringify(dict);
+            $.ajax({
+                url:"/edit_class",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(output),
+                success: function(response){
+                    document.getElementById("message").innerHTML = response;
+                    document.getElementById("message").style.display = 'block';
+                    classes[classToEdit][value] = n;
+                    document.getElementById("display").innerHTML = tablifyArray(classes);
+                }
+            });
+        }
+        /* When called these functions cancel the edit in process.*/
+        function cancelEditName(){
+            document.getElementById("editName").style.display = 'none';
+            document.getElementById("editCheckbox").style.display = 'block';
+        }
+        function cancelEditPrefDem(){
+            document.getElementById("editPrefDem").style.display = 'none';
+            document.getElementById("editCheckbox").style.display = 'block';
+        }
+        function cancelEditDay(){
+            document.getElementById("editDay").style.display = 'none';
+            document.getElementById("editCheckbox").style.display = 'block';
+        }
+        function cancelEditTime(){
+            document.getElementById("editTime").style.display = 'none';
+            document.getElementById("editCheckbox").style.display = 'block';
+        }
+        function cancelEditNOD(){
+            document.getElementById("editNOD").style.display = 'none';
+            document.getElementById("editCheckbox").style.display = 'block';
+        }
+        function cancelEditSkills(){
+            document.getElementById("editSkills").style.display = 'none';
+            document.getElementById("editCheckbox").style.display = 'block';
+        }
+    </script>
+
+    <!-- Used to confirm if a user wants to logout before doing so, only appears when logout is clicked. -->
+    <div class="check" id="logoutCheckbox">
+        <p style="font-size:30px;">Are you sure you would like to logout?</p>
+        <button type="button" class="button" onclick="logout();">Confirm logout</button>   <button type="button" class="button" onclick="logoutCancel();">Cancel</button>
+    </div>
+    <!-- The functions in this script make the checkbox appear when a user clicks logout then
+    will make it disapear if cancel is selected and logout if logout is selected. -->
+    <script>
+        function logoutChecker(){
+            document.getElementById("logoutCheckbox").style.display = 'block';
+        }
+        function logoutCancel(){
+            document.getElementById("logoutCheckbox").style.display = 'none';
+        }
+        function logout(){
+            window.location.href = "/logout";
+        }
+    </script>
+</body>
+</html>

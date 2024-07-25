@@ -1,0 +1,452 @@
+<!--
+    This page is where a user adds or updates their demonstrator details.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Demonstrator Details</title>
+</head>
+<style>
+    /* Formats the tables displayed in the page.*/
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 10px;
+    }
+    /* Fromats the table headings displayed in the page.*/
+    th {
+        background-color: #035098;
+        color: white
+    }
+
+    /* changes the background of the availabilty slot when selected.*/
+    .selected {
+      background-color: #ccc;
+    }
+
+    /* body sets the font of the text in the body.*/
+    body {
+      margin: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    /* title sets the pages banner to the top of the screen and sizes and colours it.
+    This banner is what houses the title of the page.*/
+    .title{
+        background-color: #035098;
+        padding: 20px;
+        color: white;
+        margin: 0;
+        border-radius: 0px 0px 30px 30px;
+    }
+
+    /* input is used to design the input of type text.*/
+    input[type="text"] {
+      width: 300px;
+      height: 30px;
+      padding: 10px;
+      margin: 0 30px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 20px;
+      color: #333;
+      background-color: #f1f1f1;
+      z-index: 1;
+    }
+
+    /* main is used to hold and position the main part of the pages contents.*/
+    .main{
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        top: 20%;
+        left: 5%;
+        z-index: 1;
+        flex-wrap: wrap;
+        padding-bottom: 100px;
+    }
+
+    /* container  is used to position the add and bback buttons at the bottom
+    of the screen.*/
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10vh;
+    }
+
+    /* button is used to implement a unifrom button design.*/
+    .button{
+        padding: 20px 40px;
+        margin: 0 70px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* button.skill is used to implement a specific button design for the skill buttons.*/
+    .button.skill{
+        padding: 10px 20px;
+        margin: 0 10px;
+        font-size: 18px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* button.add is used to implement a specific button design for the add button.*/
+    .button.add{
+        background-color: #035098;
+        color: white;
+    }
+
+    /* makes the buttons hovered by the cursor change background colour to show user selection.*/
+    .button.add:hover{
+        background-color: #023c72;
+    }
+    .button:hover{
+        background-color: #ccc;
+    }
+
+    /* drop implements a design style for the drop down selections.*/
+    .drop {
+        padding: 10px;
+        margin: 0 30px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 20px;
+        color: #333;
+        background-color: #f1f1f1;
+    }
+
+    /* check style is used to place the 'Are you sure?' message when a user is
+    logging out or making a change to database info. It places the popup question
+    front and center of the screen.*/
+    .check{
+        position:fixed;
+        display: none;
+        margin: auto;
+        width: 50%;
+        left: 20%;
+        top: 20%;
+        padding: 30px 10px;
+        background-color: #ccc;
+        border-color: black;
+        border-radius: 5px;
+        z-index: 2;
+        font-size: 25px;
+    }
+
+    /* logout formats the logout button placing it on the top right of the page within the
+    title banner.*/
+    .logout{
+        position: absolute;
+        top: 4%;
+        right: 3%;
+        padding: 15px 30px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* Used to produce the hover effect for the logout button. */
+    .logout:hover{
+        background-color: #ccc;
+    }
+</style>
+
+<body>
+    <!-- Creates the header banner displaying the page title and the logout button. -->
+    <div class="title">
+        <h1 style="display: flex; align-items: center; height: 20px; font-size:50px;">Add Demonstrator Details</h1>
+        <button type="button" class="logout" onclick="logout_checker();">Logout</button>
+    </div>
+
+    <!-- Holds the main functionality of the page, where a user can enter details. -->
+    <div class="main">
+        <p style="font-size:24px;">Enter your demonstrator details:</p>
+        <form>
+            <input type="text" placeholder="Name" id="name"><input id="id" placeholder="Staff ID Number"type="text">
+            <br><br>
+
+            <select class="drop" id="department"></select><select class="drop" id="pref_class"></select>
+            <br><br>
+
+            <input type="text" placeholder="List your skills" id="skills"><button type="button" class="button skill" onclick="add_skill(skills.value)"));">Add skill</button><button class="button skill" type="button" onclick="clear_skills();">Clear skills</button>
+            <p id="show_skills"></p>
+            <br>
+
+            <p style="font-size:20px;">List your experience: </p>
+            <label for="exp">What topic is your experience in: </label><input type="text" id="exp"><select class="drop" id="exp_env"><option value="working">Working</option><option value="teaching">Teaching</option><option value="studying">Studying</option></select><br><br>
+            <label for="exp_len">Length of experience in topic: </label><input type="range" id="exp_len" value="1" min="1" max="11" step="1"oninput="liveChange(this.value)"></select><select class="drop" id="m_or_y" key="m_or_y"><option value="months">months</option><option value="years">years</option></select>
+            <p id="showexp_len"></p>
+
+            <button type="button" class="button skill" onclick="add_exp()">Add experience</button><button class="button skill" type="button" onclick="clear_exp();">Clear experience list</button>
+            <p id="showExp"></p>
+            <br>
+
+            <label style="font-size: 20px;" for="availability">Your availability: </label>
+            <br><br>
+            <table>
+                <tr><th></th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th></tr>
+                <tr><td>9am - 10am</td><td><input type="checkbox" id="mon9" onclick="highlight_selected(this)" class ="checkbox" value="Monday9"></td><td><input type="checkbox" id="tue9" onclick="highlight_selected(this)" value="Tuesday9"></td><td><input type="checkbox" id="wed9" onclick="highlight_selected(this)" value="Wednesday9"></td><td><input type="checkbox" id="thu9" onclick="highlight_selected(this)" value="Thursday9"></td><td><input type="checkbox" id="fri9" onclick="highlight_selected(this)" value="Friday9"></td></tr>
+                <tr><td>10am - 11am</td><td><input type="checkbox" id="mon10" onclick="highlight_selected(this)" value="Monday10"></td><td><input type="checkbox" id="tue10" onclick="highlight_selected(this)" value="Tuesday10"></td><td><input type="checkbox" id="wed10" onclick="highlight_selected(this)" value="Wednesday10"></td><td><input type="checkbox" id="thu10" onclick="highlight_selected(this)" value="Thursday10"></td><td><input type="checkbox" id="fri10" onclick="highlight_selected(this)" value="Friday10"></td></tr>
+                <tr><td>11am - 12am</td><td><input type="checkbox" id="mon11" onclick="highlight_selected(this)" value="Monday11"></td><td><input type="checkbox" id="tue11" onclick="highlight_selected(this)" value="Tuesday11"></td><td><input type="checkbox" id="wed11" onclick="highlight_selected(this)" value="Wednesday11"></td><td><input type="checkbox" id="thu11" onclick="highlight_selected(this)" value="Thursday11"></td><td><input type="checkbox" id="fri11" onclick="highlight_selected(this)" value="Friday11"></td></tr>
+                <tr><td>12am - 1pm</td><td><input type="checkbox" id="mon12" onclick="highlight_selected(this)" value="Monday12"></td><td><input type="checkbox" id="tue12" onclick="highlight_selected(this)" value="Tuesday12"></td><td><input type="checkbox" id="wed12" onclick="highlight_selected(this)" value="Wednesday12"></td><td><input type="checkbox" id="thu12" onclick="highlight_selected(this)" value="Thursday12"></td><td><input type="checkbox" id="fri12" onclick="highlight_selected(this)" value="Friday12"></td></tr>
+                <tr><td>1pm - 2pm</td><td><input type="checkbox" id="mon13" onclick="highlight_selected(this)" value="Monday13"></td><td><input type="checkbox" id="tue13" onclick="highlight_selected(this)" value="Tuesday13"></td><td><input type="checkbox" id="wed13" onclick="highlight_selected(this)" value="Wednesday13"></td><td><input type="checkbox" id="thu13" onclick="highlight_selected(this)" value="Thursday13"></td><td><input type="checkbox" id="fri13" onclick="highlight_selected(this)" value="Friday13"></td></tr>
+                <tr><td>2pm - 3pm</td><td><input type="checkbox" id="mon14" onclick="highlight_selected(this)" value="Monday14"></td><td><input type="checkbox" id="tue14" onclick="highlight_selected(this)" value="Tuesday14"></td><td><input type="checkbox" id="wed14" onclick="highlight_selected(this)" value="Wednesday14"></td><td><input type="checkbox" id="thu14" onclick="highlight_selected(this)" value="Thursday14"></td><td><input type="checkbox" id="fri14" onclick="highlight_selected(this)" value="Friday14"></td></tr>
+                <tr><td>3pm - 4pm</td><td><input type="checkbox" id="mon15" onclick="highlight_selected(this)" value="Monday15"></td><td><input type="checkbox" id="tue15" onclick="highlight_selected(this)" value="Tuesday15"></td><td><input type="checkbox" id="wed15" onclick="highlight_selected(this)" value="Wednesday15"></td><td><input type="checkbox" id="thu15" onclick="highlight_selected(this)" value="Thursday15"></td><td><input type="checkbox" id="fri15" onclick="highlight_selected(this)" value="Friday15"></td></tr>
+                <tr><td>4pm - 5pm</td><td><input type="checkbox" id="mon16" onclick="highlight_selected(this)" value="Monday16"></td><td><input type="checkbox" id="tue16" onclick="highlight_selected(this)" value="Tuesday16"></td><td><input type="checkbox" id="wed16" onclick="highlight_selected(this)" value="Wednesday16"></td><td><input type="checkbox" id="thu16" onclick="highlight_selected(this)" value="Thursday16"></td><td><input type="checkbox" id="fri16" onclick="highlight_selected(this)" value="Friday16"></td></tr>
+            </table>
+            <br>
+            <button class="button skill" type="button" onclick="check_all();">Check all availability times</button><button type="button" class="button skill" onclick="clear_table();">Clear availability selection</button>
+        </form>
+        <p style="font-size:20px;" id="response_message"></p>
+    </div>
+
+    <!-- checkbox is used to see if a user is happy with their input and gives a chance to cancel before
+    implementing the addition. -->
+    <div class="check" id="checkbox">
+        <p style="font-size:30px;">Are you sure you would like to add the demonstrator:</p>
+        <p id="check_name"></p>
+        <p id="check_id"></p>
+        <p id="check_dep"></p>
+        <p id="check_skills"></p>
+        <button type="button" class="button" onclick="submit_details();">Confirm</button>   <button type="button" class="button" onclick="cancel();">Cancel</button>
+    </div>
+
+    <!-- Used to hold the add class and back buttons centered at the bottom of the page. -->
+    <div class="container">
+        <button type="button" class="button add" onclick="checker();">Add demonstrator details</button><button class="button" onclick="history.back()">Go Back</button>
+    </div>
+
+    <!-- Establishes the ajax framework used to communicate with app.py. -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+
+    <!-- This script runs when the page is loaded, it accepts values of classes and departments so
+    these values can be presented as options in the add class form. -->
+    <script>
+        const dep_and_class = JSON.parse('{{deps_and_classes | tojson}}');
+        var department = document.getElementById("department");
+        var pref_class = document.getElementById("pref_class");
+        var optionsD = "<option value='' disabled selected>Department</option>";
+        var optionsC = "<option value='' disabled selected>Preferred Class (class code, name)</option><option value ='NA'>No preference</option>";
+
+        for(var i = 0; i < dep_and_class["deps"].length; i++){
+            optionsD += "<option>" + dep_and_class["deps"][i] + "</option>";
+        }
+        department.innerHTML = optionsD;
+
+        for(var i = 0; i < dep_and_class["clas"].length; i++){
+            optionsC += "<option>" + dep_and_class["clas"][i] + "</option>";
+        }
+        pref_class.innerHTML = optionsC;
+    </script>
+
+    <script>
+        /* displaySkills is the list of skills a user has added, addSkill function adds a skill to
+        displaySkills and then displays the showSkills list.*/
+        var display_skills = [];
+        function add_skill(add){
+            var show_skills = document.getElementById('show_skills');
+            var show = "<ul>";
+            for(var i = 0; i < display_skills.length; i++){
+                show += "<li>" + display_skills[i] + "</li>";
+            }
+            show += "<li>"+ add + "</li></ul>";
+            display_skills.push(add);
+            show_skills.innerHTML = show;
+        }
+
+        /* Clears the list of skills.*/
+        function clear_skills(){
+            var show_skills = document.getElementById('show_skills');
+            show_skills.innerHTML = "";
+            for(var i = 0; i < display_skills.length; i++){
+                display_skills.pop();
+                display_skills.pop();
+                display_skills.pop();
+            }
+        }
+        /* liveChange keeps the experience values accurate with what the slider is set to.*/
+        function liveChange(value){ 
+            if(value == "11" && document.getElementById("m_or_y").value == "years"){
+                var display = value;
+                display += "+";
+                document.getElementById("showexp_len").innerHTML = display;
+            }else{
+                document.getElementById("showexp_len").innerHTML = value;
+            }
+        }
+        /* display_exp is the list of experience a user has added, add_exp function adds a exp to
+        display_exp and then displays the showExp list.*/
+        var display_exp = [];
+        function add_exp(){
+            var showExp = document.getElementById('showExp');
+            var exp = {'topic': document.getElementById('exp').value, 'env': document.getElementById('exp_env').value, 'exp_len': document.getElementById('exp_len').value, 'exp_my': document.getElementById('m_or_y').value};
+            var show = "<ul>";
+            for(var i = 0; i < display_exp.length; i++){
+                show += "<li>" + display_exp[i]['exp_len'] + " " + display_exp[i]['exp_my'] + " " + display_exp[i]['env'] + " " + display_exp[i]['topic'] + "</li>";
+            }
+            show += "<li>"+ exp['exp_len'] + " " + exp['exp_my'] + " " + exp['env'] + " " + exp['topic'] + "</li></ul>";
+            display_exp.push(exp);
+            showExp.innerHTML = show;
+        }
+        /* Clears the list of experience.*/
+        function clear_exp(){
+            var showExp = document.getElementById('showExp');
+            showExp.innerHTML = "";
+            for(var i = 0; i < display_exp.length; i++){
+                display_exp.pop();
+                display_exp.pop();
+                display_exp.pop();
+            }
+        }
+
+        /* Highlights specific availability slot when called.*/
+        function highlight_selected(avail){
+            var cell = avail.parentNode;
+            if (avail.checked) {
+                cell.classList.add('selected');
+            } else {
+                cell.classList.remove('selected');
+            }
+        }
+        /* Clears all availability selections when called.*/
+        function clear_table(){
+            var avail_check_boxes = document.querySelectorAll('input[type="checkbox"]');
+            for(var i = 0; i < avail_check_boxes.length; i++){
+                avail_check_boxes[i].checked = false;
+                highlight_selected(avail_check_boxes[i])
+            }
+        }
+        /* Checks all availability selections when called.*/
+        function check_all(){
+            var allCB = document.querySelectorAll('input[type="checkbox"]');
+            for(var i = 0; i < allCB.length; i++){
+                allCB[i].checked = true;
+                highlight_selected(allCB[i])
+            }
+        }
+
+        /* submit_details function takes all of the user inputted values and sends a
+        post ajax request to app.py, containing a dictionary of the values. And displays
+        the resulting response. */
+        function submit_details(){
+            document.getElementById("checkbox").style.display = 'none';
+            document.getElementById("response_message").style.display = 'block';
+            const name = document.getElementById('name').value;
+            const staff_id = document.getElementById('id').value;
+            const dep = document.getElementById('department').value;
+            const pref_class = document.getElementById('pref_class').value;
+            if(pref_class == 'NA'){
+                pref_classCode = 'NA';
+            }else{
+                const splitPClass = pref_class.split(',');
+                const pref_classCode = splitPClass[0];
+            }
+            const skills = display_skills;
+            const exp = display_exp;
+            var avail = [];
+
+            const arrayify_check_boxes = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'));
+            for(var i = 0; i < arrayify_check_boxes.length; i++){
+                avail.push(arrayify_check_boxes[i].value);
+            }
+            
+            const dict = {'name':name, 'staff_id':staff_id, 'dep':dep, 'pClass':pref_classCode, 'skills':skills, 'exp':exp, 'avail':avail};
+
+            const output = JSON.stringify(dict);
+            $.ajax({
+                url:"/add_dem",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(output),
+                success: function(response){
+                    document.getElementById("response_message").innerHTML = response;
+                }
+            });
+
+        }
+
+        /* checker function is used to make sure the values are filled out appropriately. Then it pulls
+        up the checkbox that asks a user if they are happy to add the demonstrator displaying the details to
+        the user with confirm and cancel options. */
+        function checker(){
+            document.getElementById("response_message").style.display = 'none';
+            name = document.getElementById('name').value;
+            staff_id = document.getElementById('id').value;
+            dep = document.getElementById('department').value;
+            pref_class = document.getElementById('pref_class').value;
+            splitPClass = pref_class.split(',');
+            pref_classCode = splitPClass[0];
+            skills = display_skills;
+            exp = display_exp;
+            var avail = [];
+
+            const arrayify_check_boxes = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'));
+            for(var i = 0; i < arrayify_check_boxes.length; i++){
+                avail.push(arrayify_check_boxes[i].value);
+            }
+
+            if(staff_id == ''){
+                document.getElementById("response_message").innerHTML = 'Cannot add demonstrator, staff ID needed.';
+                document.getElementById("response_message").style.display = 'block';
+                return;
+            }
+            if(name == ''){
+                document.getElementById("response_message").innerHTML = 'Cannot add demonstrator, name needed.';
+                document.getElementById("response_message").style.display = 'block';
+                return;
+            }
+            if(dep == ''){
+                document.getElementById("response_message").innerHTML = 'Cannot add demonstrator, department needed.';
+                document.getElementById("response_message").style.display = 'block';
+                return;
+            }
+            if(pref_class == ''){
+                document.getElementById("response_message").innerHTML = 'Cannot add demonstrator, preferred class needed.';
+                document.getElementById("response_message").style.display = 'block';
+                return;
+            }
+            if(avail == ''){
+                document.getElementById("response_message").innerHTML = 'Cannot add demonstrator, no availability.';
+                document.getElementById("response_message").style.display = 'block';
+                return;
+            }
+            
+            document.getElementById("checkbox").style.display = 'block';
+            document.getElementById("check_name").innerHTML = 'Name: ' + name;
+            document.getElementById("check_id").innerHTML = 'Staff ID: ' + staff_id;
+            document.getElementById("check_dep").innerHTML = 'Department: ' + dep;
+            document.getElementById("check_skills").innerHTML = 'Skills: ' + skills;
+
+        }
+        /* cancels the add and hides the checkbox.*/
+        function cancel(){
+            document.getElementById("checkbox").style.display = 'none';
+        }
+
+    </script>
+
+    <!-- Used to confirm if a user wants to logout before doing so, only appears when logout is clicked. -->
+    <div class="check" id="logout_checkbox">
+        <p style="font-size:30px;">Are you sure you would like to logout?</p>
+        <button type="button" class="button" onclick="logout();">Confirm logout</button>   <button type="button" class="button" onclick="logout_cancel();">Cancel</button>
+    </div>
+
+    <!-- The functions in this script make the checkbox appear when a user clicks logout then
+    will make it disapear if cancel is selected and logout if logout is selected. -->
+    <script>
+        function logout_checker(){
+            document.getElementById("logout_checkbox").style.display = 'block';
+        }
+        function logout_cancel(){
+            document.getElementById("logout_checkbox").style.display = 'none';
+        }
+        function logout(){
+            window.location.href = "/logout";
+        }
+    </script>
+</body>
+</html>

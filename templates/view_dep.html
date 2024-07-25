@@ -1,0 +1,146 @@
+<!--
+    This HTML template is used to display the stored departments and their details.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Departments</title>
+</head>
+<style>
+    /* Formats the tables displayed in the page.*/
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 10px;
+    }
+    /* Formats the table headings displayed in the page.*/
+    th {
+        background-color: #ccc;
+        color: black
+    }
+
+    /* body sets the font of the text in the body.*/
+    body {
+      margin: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    /* title sets the pages banner to the top of the screen and sizes and colours it.
+    This banner is what houses the title of the page.*/
+    .title{
+        background-color: #035098;
+        padding: 20px;
+        color: white;
+        margin: 0;
+        border-radius: 0px 0px 30px 30px;
+    }
+
+    /* container  is used to position the add and bback buttons at the bottom
+    of the screen.*/
+    .container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10vh;
+    }
+
+    /* button is used to implement a unifrom button design.*/
+    .button{
+        padding: 20px 40px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* makes the buttons hovered by the cursor change background colour to show user selection.*/
+    .button:hover{
+        background-color: #ccc;
+    }
+
+    /* check style is used to place the 'Are you sure?' message when a user is
+    logging out or making a change to database info. It places the popup question
+    front and center of the screen.*/
+    .check{
+        position:fixed;
+        display: none;
+        margin: auto;
+        width: 50%;
+        left: 20%;
+        top: 20%;
+        padding: 30px 10px;
+        background-color: #ccc;
+        border-color: black;
+        border-radius: 5px;
+        z-index: 2;
+        font-size: 25px;
+    }
+
+    /* logout formats the logout button placing it on the top right of the page within the
+    title banner.*/
+    .logout{
+        position: absolute;
+        top: 4%;
+        right: 3%;
+        padding: 15px 30px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: none;
+        background-color: #dfdfdf;
+    }
+    /* Used to produce the hover effect for the logout button. */
+    .logout:hover{
+        background-color: #ccc;
+    }
+</style>
+
+<body>
+    <!-- Creates the header banner displaying the page title and the logout button. -->
+    <div class="title">
+        <h1 style="display: flex; align-items: center; height: 20px; font-size:50px;">View Departments</h1>
+        <button type="button" class="logout" onclick="logoutChecker();">Logout</button>
+    </div>
+
+    <!-- Displays the table of departments. -->
+    <p style="font-size:20px;">These are the departments currently stored in the database:</p>
+    <div style="position: relative; left:20%; margin: 20px;" id="display"></div>
+
+    <!-- Used to hold the back button centered at the bottom of the page. -->
+    <div class="container">
+        <button class="button" onclick="history.back()">Go Back</button>
+    </div>
+
+    <!-- This script runs when the page loads and recieves the department data from app.py upon loading.
+    Which it then puts into a table for display. -->
+    <script>
+        const departments = JSON.parse('{{deps|tojson}}');
+        var display = document.getElementById('display');
+        var table = "<table><tr><th>Department</th></tr>";
+
+        for(var i = 0; i < departments.length; i++){
+            table += "<tr><td>" + departments[i] + "</td></tr>";
+        }
+        table += "</table>";
+        display.innerHTML = table;
+    </script>
+
+    <!-- Used to confirm if a user wants to logout before doing so, only appears when logout is clicked. -->
+    <div class="check" id="logoutCheckbox">
+        <p style="font-size:30px;">Are you sure you would like to logout?</p>
+        <button type="button" class="button" onclick="logout();">Confirm logout</button>   <button type="button" class="button" onclick="logoutCancel();">Cancel</button>
+    </div>
+
+    <!-- The functions in this script make the checkbox appear when a user clicks logout then
+    will make it disapear if cancel is selected and logout if logout is selected. -->
+    <script>
+        function logoutChecker(){
+            document.getElementById("logoutCheckbox").style.display = 'block';
+        }
+        function logoutCancel(){
+            document.getElementById("logoutCheckbox").style.display = 'none';
+        }
+        function logout(){
+            window.location.href = "/logout";
+        }
+    </script>
+</body>
+</html>
